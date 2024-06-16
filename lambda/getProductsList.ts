@@ -1,7 +1,7 @@
 import { APIGatewayProxyResult } from "aws-lambda";
 import { productsMocks } from "./mocks";
 
-exports.handler = async (): Promise<APIGatewayProxyResult> => {
+export const handler = async (): Promise<APIGatewayProxyResult> => {
   return {
     statusCode: 200,
     headers: {
