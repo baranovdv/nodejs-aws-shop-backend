@@ -8,26 +8,21 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
     super(scope, id, props);
 
     const getProductsList = new lambda.Function(this, "getProductsList", {
-      runtime: lambda.Runtime.NODEJS_20_X, // Choose any supported Node.js runtime
-      code: lambda.Code.fromAsset("lambda"), // Points to the lambda directory
-      handler: "getProductsList.handler", // Points to the 'hello' file in the lambda directory
+      runtime: lambda.Runtime.NODEJS_20_X,
+      code: lambda.Code.fromAsset("lambda"),
+      handler: "getProductsList.handler",
     });
 
     const getProductsById = new lambda.Function(this, "getProductsById", {
-      runtime: lambda.Runtime.NODEJS_20_X, // Choose any supported Node.js runtime
-      code: lambda.Code.fromAsset("lambda"), // Points to the lambda directory
-      handler: "getProductsById.handler", // Points to the 'hello' file in the lambda directory
+      runtime: lambda.Runtime.NODEJS_20_X,
+      code: lambda.Code.fromAsset("lambda"),
+      handler: "getProductsById.handler",
     });
 
     const api = new apigateway.LambdaRestApi(this, "getProducts", {
       handler: getProductsList,
       proxy: false,
     });
-
-    // new cdk.CfnOutput(this, 'HelloWorldFunctionName', {
-    //   value: getProductsList.functionName,
-    //   description: 'JavaScript Lambda function'
-    // });
 
     const productsResource = api.root.addResource("products");
     productsResource.addMethod("GET");
