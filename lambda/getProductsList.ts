@@ -10,6 +10,8 @@ const stockTableName = process.env.STOCK || "Stock";
 export const handler = async (): Promise<APIGatewayProxyResult> => {
   const dynamoDB = new DynamoDB.DocumentClient({ region: region });
 
+  console.log('GET products list')
+
   try {
     const products = await dynamoDB
       .scan({ TableName: productsTableName })
@@ -25,8 +27,6 @@ export const handler = async (): Promise<APIGatewayProxyResult> => {
 
       return { ...product, count };
     });
-
-    console.log("availableProducts", availableProducts);
 
     return {
       statusCode: 200,

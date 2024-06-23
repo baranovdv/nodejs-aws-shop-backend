@@ -22,6 +22,8 @@ export const handler = async (
       };
     }
 
+    console.log(`POST product with body ${event.body}`)
+
     const { title, description, price, count } = JSON.parse(
       event.body
     ) as AvailableProduct;

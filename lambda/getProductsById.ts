@@ -13,6 +13,8 @@ export const handler = async (
   const dynamoDB = new DynamoDB.DocumentClient({ region: region });
   const id = event.pathParameters?.id;
 
+  console.log(`GET product with id ${id}`)
+
   try {
     const product = await dynamoDB
       .get({
