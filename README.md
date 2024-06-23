@@ -13,32 +13,14 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 * `npx cdk diff`    compare deployed stack with current state
 * `npx cdk synth`   emits the synthesized CloudFormation template
 
-## Create DynamoDB tables
+## Build app
 
-### table 1:
+* `npm run build` 
 
-aws dynamodb create-table \
-    --table-name Products \
-    --attribute-definitions \
-        AttributeName=id,AttributeType=S \
-        AttributeName=title,AttributeType=S \
-    --key-schema \
-        AttributeName=id,KeyType=HASH \
-        AttributeName=title,KeyType=RANGE \
-    --provisioned-throughput \
-        ReadCapacityUnits=5,WriteCapacityUnits=5 \
-    --table-class STANDARD
+## Deploy CDK
 
-### table 2:
+* `npm run cdk` 
 
-aws dynamodb create-table \
-    --table-name Stock \
-    --attribute-definitions \
-        AttributeName=product_id,AttributeType=S \
-        AttributeName=count,AttributeType=N \
-    --key-schema \
-        AttributeName=product_id,KeyType=HASH \
-        AttributeName=count,KeyType=RANGE \
-    --provisioned-throughput \
-        ReadCapacityUnits=5,WriteCapacityUnits=5 \
-    --table-class STANDARD
+## Migrate products and stock to DynamoDB
+
+* `npm run migrate` 

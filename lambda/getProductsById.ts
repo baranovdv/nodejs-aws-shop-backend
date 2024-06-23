@@ -1,5 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { productsMocks } from "./mocks";
+import { headersCORS } from "./data";
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -12,13 +13,7 @@ export const handler = async (
     if (product) {
       return {
         statusCode: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "*",
-          "Access-Control-Allow-Methods": "*",
-          "Access-Control-Allow-Credentials": true,
-          "Content-Type": "application/json",
-        },
+        headers: headersCORS,
         body: JSON.stringify(product),
       };
     }
@@ -26,13 +21,7 @@ export const handler = async (
 
   return {
     statusCode: 404,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "*",
-      "Access-Control-Allow-Methods": "*",
-      "Access-Control-Allow-Credentials": true,
-      "Content-Type": "application/json",
-    },
+    headers: headersCORS,
     body: JSON.stringify({ message: "Product not found" }),
   };
 };
