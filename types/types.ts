@@ -5,6 +5,11 @@ export type Product = {
   price: number;
 }
 
+export type Stock = {
+  product_id: String;
+  count: number;
+}
+
 export type AvailableProduct = {
   id: string | undefined;
   title: string;
