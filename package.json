@@ -9,6 +9,7 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
+    "deploy": "cdk deploy",
     "migrate": "cd db/scripts && ts-node fillDBwithProducts.ts"
   },
   "devDependencies": {
