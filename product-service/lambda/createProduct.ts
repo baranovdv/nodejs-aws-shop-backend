@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { headersCORS } from "./data";
 import { DynamoDB } from "aws-sdk";
 import { AvailableProduct, Product, Stock } from "../types/types";
-import { v4 } from "uuid";
+import {randomUUID} from "node:crypto"; 
 
 const region = process.env.REGION || "ap-southeast-2";
 const productsTableName = process.env.PRODUCTS || "Products";
@@ -60,7 +60,7 @@ export const handler = async (
       };
     }
 
-    const newId = v4();
+    const newId = randomUUID();
 
     await dynamoDB
       .transactWrite({
