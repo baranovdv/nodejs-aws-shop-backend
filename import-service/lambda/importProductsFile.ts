@@ -4,8 +4,16 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const region = process.env.REGION || "ap-southeast-2";
 
-exports.handler = async (event: APIGatewayProxyEvent) => {
-  const fileName = event.queryStringParameters?.fileName;
+export const handler = async (event: APIGatewayProxyEvent) => {
+  const fileName = event.queryStringParameters?.name;
+
+  if (!fileName) {
+    return {
+      statusCode: 400,
+      body: { message: "File name is needed" },
+    };
+}
+
   const bucketName = process.env.BUCKET_NAME;
   const key = `uploaded/${fileName}`;
 
