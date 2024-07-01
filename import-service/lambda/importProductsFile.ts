@@ -12,9 +12,9 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       statusCode: 400,
       body: { message: "File name is needed" },
     };
-}
+  }
 
-  const bucketName = process.env.BUCKET_NAME;
+  const bucketName = process.env.BUCKET_NAME || "";
   const key = `uploaded/${fileName}`;
 
   const client = new S3Client({ region: region });
