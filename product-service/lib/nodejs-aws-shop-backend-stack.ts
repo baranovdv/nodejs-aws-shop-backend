@@ -3,6 +3,9 @@ import { Construct } from "constructs";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as apigateway from "aws-cdk-lib/aws-apigateway";
 import * as dynamoDB from "aws-cdk-lib/aws-dynamodb";
+import * as SQS from "aws-cdk-lib/aws-sqs";
+import * as iam from "aws-cdk-lib/aws-iam";
+import * as aws_lambda_event_sources from 'aws-cdk-lib/aws-lambda-event-sources';
 
 const region = process.env.REGION || "ap-southeast-2";
 const productsTableName = process.env.PRODUCTS || "Products";
@@ -30,6 +33,12 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
       writeCapacity: 1,
     });
 
+    const sqsService = new SQS.Queue(this, "catalogItemsQueue");
+    new cdk.CfnOutput(this, "sqsServiceUrl", {
+      value: sqsService.queueUrl,
+      exportName: "sqsServiceUrl",
+    });
+
     const getProductsList = new lambda.Function(this, "getProductsList", {
       runtime: lambda.Runtime.NODEJS_16_X,
       code: lambda.Code.fromAsset("lambda"),
@@ -51,12 +60,46 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
       environment: environmentConsts,
     });
 
+    const catalogBatchProcess = new lambda.Function(
+      this,
+      "catalogBatchProcess",
+      {
+        runtime: lambda.Runtime.NODEJS_16_X,
+        code: lambda.Code.fromAsset("lambda"),
+        handler: "catalogBatchProcess.handler",
+        environment: environmentConsts,
+      }
+    );
+
+    const importFileParserFunctionArn = cdk.Fn.importValue(
+      "importFileParserFunctionArn"
+    );
+    const importFileParserFunctionRoleArn = cdk.Fn.importValue(
+      "importFileParserFunctionRoleArn"
+    );
+
+    const importFileParserFunctionRole = iam.Role.fromRoleArn(
+      this,
+      "importFileParserFunctionRole",
+      importFileParserFunctionRoleArn
+    );
+    const importFileParserFunction = lambda.Function.fromFunctionAttributes(
+      this,
+      "importFileParserFunction",
+      {
+        functionArn: importFileParserFunctionArn,
+        role: importFileParserFunctionRole,
+      }
+    );
+
     productsTable.grantReadWriteData(getProductsList);
     stockTable.grantReadWriteData(getProductsList);
     productsTable.grantReadWriteData(getProductsById);
     stockTable.grantReadWriteData(getProductsById);
     productsTable.grantReadWriteData(createProducts);
     stockTable.grantReadWriteData(createProducts);
+    sqsService.grantConsumeMessages(catalogBatchProcess);
+    sqsService.grantSendMessages(importFileParserFunction);
 
     const api = new apigateway.LambdaRestApi(this, "getProducts", {
       handler: getProductsList,
@@ -78,6 +121,12 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
     productByIdResource.addMethod(
       "GET",
       new apigateway.LambdaIntegration(getProductsById)
+    );
+
+    catalogBatchProcess.addEventSource(
+      new aws_lambda_event_sources.SqsEventSource(sqsService, {
+        batchSize: 1,
+      })
     );
   }
 }

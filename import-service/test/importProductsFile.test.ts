@@ -1,14 +1,14 @@
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { APIGatewayProxyEvent } from "aws-lambda";
-import { handler } from "./importProductsFile";
+import { handler } from "../lambda/importProductsFile";
 
 const mockFileName = "test-file.csv";
-const mockSignedUrl = 'https://test-bucket.s3.ap-southeast-2.amazonaws.com/test-file.csv';
+const mockSignedUrl =
+  "https://test-bucket.s3.ap-southeast-2.amazonaws.com/test-file.csv";
 
 jest.mock("@aws-sdk/s3-request-presigner", () => ({
   getSignedUrl: jest.fn(),
 }));
-
 
 describe("importProductsFile handler", () => {
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe("importProductsFile handler", () => {
     (getSignedUrl as jest.Mock).mockRejectedValue(new Error());
 
     const res = await handler(event);
-    expect(res.body).toEqual({ message: "Signed url failed" }); 
+    expect(res.body).toEqual({ message: "Signed url failed" });
     expect(res.statusCode).toBe(500);
   });
 

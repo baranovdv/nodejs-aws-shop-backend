@@ -1,5 +1,14 @@
 import { Construct } from "constructs";
-import { Stack, type StackProps, aws_s3, aws_lambda, aws_apigateway, aws_lambda_event_sources} from "aws-cdk-lib";
+import {
+  Stack,
+  type StackProps,
+  aws_s3,
+  aws_lambda,
+  aws_apigateway,
+  aws_lambda_event_sources,
+  CfnOutput,
+  Fn,
+} from "aws-cdk-lib";
 
 export class ImportServiceStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -10,6 +19,9 @@ export class ImportServiceStack extends Stack {
       "S3Bucket",
       "aws-shop-s3-bucket"
     );
+
+    const sqsServiceUrl = Fn.importValue("sqsServiceUrl");
+    // const sqsServiceUrl = 'placeholder';
 
     const importProductsFileFunction = new aws_lambda.Function(
       this,
@@ -31,8 +43,21 @@ export class ImportServiceStack extends Stack {
         runtime: aws_lambda.Runtime.NODEJS_16_X,
         code: aws_lambda.Code.fromAsset("lambda"),
         handler: "importFileParser.handler",
+        environment: {
+          SQS_SERVICE_URL: sqsServiceUrl,
+        },
       }
     );
+
+    new CfnOutput(this, "importFileParserFunction", {
+      value: importFileParserFunction.functionArn,
+      exportName: "importFileParserFunctionArn",
+    });
+
+    new CfnOutput(this, "importFileParserFunctionRole", {
+      value: importFileParserFunction.role!.roleArn,
+      exportName: "importFileParserFunctionRoleArn",
+    });
 
     bucket.grantReadWrite(importProductsFileFunction);
     bucket.grantReadWrite(importFileParserFunction);
@@ -47,10 +72,13 @@ export class ImportServiceStack extends Stack {
     );
     importResource.addMethod("GET", importIntegration);
 
-    const s3ObjCreatedEvent = new aws_lambda_event_sources.S3EventSourceV2(bucket, {
-      events: [aws_s3.EventType.OBJECT_CREATED],
-      filters: [{ prefix: "uploaded/" }],
-    });
+    const s3ObjCreatedEvent = new aws_lambda_event_sources.S3EventSourceV2(
+      bucket,
+      {
+        events: [aws_s3.EventType.OBJECT_CREATED],
+        filters: [{ prefix: "uploaded/" }],
+      }
+    );
 
     importFileParserFunction.addEventSource(s3ObjCreatedEvent);
   }

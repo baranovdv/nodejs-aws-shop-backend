@@ -1,0 +1,4 @@
+id,title,description,price,count
+10,First,Product-from-csv,100,4
+20,Second,Product-from-csv,2323,5
+30,Third,Product-from-csv,3434,6
