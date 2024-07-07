@@ -1,21 +1,30 @@
 import { SNSClient } from "@aws-sdk/client-sns";
 import { handler } from "./catalogBatchProcess";
 import { SQSEvent } from "aws-lambda";
+import { DynamoDB } from "aws-sdk";
 
 jest.mock("@aws-sdk/client-sns", () => {
   return {
     SNSClient: jest.fn().mockReturnValue({
       send: jest.fn(),
     }),
+    DynamoDB: jest.fn().mockReturnValue({
+      DocumentClient: jest.fn(),
+    }),
+
+
     PublishCommand: jest.fn(),
   };
 });
 
 describe("handler", () => {
   let snsClientMock: any;
+  let dbClient: any;
 
   beforeEach(() => {
     snsClientMock = new SNSClient();
+    dbClient = new DynamoDB.DocumentClient();
+
     jest.clearAllMocks();
   });
 
