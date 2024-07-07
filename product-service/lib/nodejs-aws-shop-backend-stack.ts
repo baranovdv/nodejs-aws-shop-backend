@@ -5,7 +5,7 @@ import * as apigateway from "aws-cdk-lib/aws-apigateway";
 import * as dynamoDB from "aws-cdk-lib/aws-dynamodb";
 import * as SQS from "aws-cdk-lib/aws-sqs";
 import * as iam from "aws-cdk-lib/aws-iam";
-import * as aws_lambda_event_sources from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as aws_lambda_event_sources from "aws-cdk-lib/aws-lambda-event-sources";
 
 const region = process.env.REGION || "ap-southeast-2";
 const productsTableName = process.env.PRODUCTS || "Products";
@@ -97,7 +97,9 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
     productsTable.grantReadWriteData(getProductsById);
     stockTable.grantReadWriteData(getProductsById);
     productsTable.grantReadWriteData(createProducts);
-    stockTable.grantReadWriteData(createProducts);
+    stockTable.grantReadWriteData(getProductsById);
+    productsTable.grantReadWriteData(catalogBatchProcess);
+    stockTable.grantReadWriteData(catalogBatchProcess);
     sqsService.grantConsumeMessages(catalogBatchProcess);
     sqsService.grantSendMessages(importFileParserFunction);
 
@@ -125,7 +127,8 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
 
     catalogBatchProcess.addEventSource(
       new aws_lambda_event_sources.SqsEventSource(sqsService, {
-        batchSize: 1,
+        batchSize: 5,
+        maxBatchingWindow: cdk.Duration.seconds(3),
       })
     );
   }
