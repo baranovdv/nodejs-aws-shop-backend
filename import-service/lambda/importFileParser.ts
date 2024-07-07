@@ -34,7 +34,7 @@ export const handler = async (event: S3Event) => {
       .pipe(csv())
       .on("data", (data) => resultData.push(data))
       .on("end", async () => {
-        console.log("Resulted data", resultData);
+        // console.log("Resulted data", resultData);
         const command = new SendMessageCommand({
           QueueUrl: sqsServiceUrl,
           MessageBody: JSON.stringify(resultData),

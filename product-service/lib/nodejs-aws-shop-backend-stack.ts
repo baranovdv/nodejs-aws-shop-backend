@@ -5,6 +5,8 @@ import * as apigateway from "aws-cdk-lib/aws-apigateway";
 import * as dynamoDB from "aws-cdk-lib/aws-dynamodb";
 import * as SQS from "aws-cdk-lib/aws-sqs";
 import * as iam from "aws-cdk-lib/aws-iam";
+import * as sns from "aws-cdk-lib/aws-sns";
+import * as sns_subs from "aws-cdk-lib/aws-sns-subscriptions";
 import * as aws_lambda_event_sources from "aws-cdk-lib/aws-lambda-event-sources";
 
 const region = process.env.REGION || "ap-southeast-2";
@@ -39,6 +41,8 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
       exportName: "sqsServiceUrl",
     });
 
+    const createProductTopic = new sns.Topic(this, "createProductTopic");
+
     const getProductsList = new lambda.Function(this, "getProductsList", {
       runtime: lambda.Runtime.NODEJS_16_X,
       code: lambda.Code.fromAsset("lambda"),
@@ -67,7 +71,10 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
         runtime: lambda.Runtime.NODEJS_16_X,
         code: lambda.Code.fromAsset("lambda"),
         handler: "catalogBatchProcess.handler",
-        environment: environmentConsts,
+        environment: {
+          ...environmentConsts,
+          SNS_TOPIC_ARN: createProductTopic.topicArn,
+        },
       }
     );
 
@@ -92,6 +99,20 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
       }
     );
 
+    createProductTopic.addSubscription(
+      new sns_subs.EmailSubscription("ThereWasMyEmail_1@gmail.com")
+    );
+
+    createProductTopic.addSubscription(
+      new sns_subs.EmailSubscription("ThereWasMyEmail_2@gmail.com", {
+        filterPolicy: {
+          price: sns.SubscriptionFilter.numericFilter({
+            between: { start: 0, stop: 50 },
+          }),
+        },
+      })
+    );
+
     productsTable.grantReadWriteData(getProductsList);
     stockTable.grantReadWriteData(getProductsList);
     productsTable.grantReadWriteData(getProductsById);
@@ -102,6 +123,7 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
     stockTable.grantReadWriteData(catalogBatchProcess);
     sqsService.grantConsumeMessages(catalogBatchProcess);
     sqsService.grantSendMessages(importFileParserFunction);
+    createProductTopic.grantPublish(catalogBatchProcess);
 
     const api = new apigateway.LambdaRestApi(this, "getProducts", {
       handler: getProductsList,
