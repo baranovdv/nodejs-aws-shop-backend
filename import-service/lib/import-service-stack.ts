@@ -24,7 +24,6 @@ export class ImportServiceStack extends Stack {
     );
 
     const sqsServiceUrl = Fn.importValue("sqsServiceUrl");
-    // const sqsServiceUrl = 'placeholder';
 
     const importProductsFileFunction = new aws_lambda.Function(
       this,

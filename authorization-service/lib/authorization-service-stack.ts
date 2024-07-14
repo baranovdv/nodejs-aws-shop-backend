@@ -1,14 +1,16 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { aws_lambda } from "aws-cdk-lib";
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { config } from "dotenv";
+
+config();
 
 export class AuthorizationServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const login = "baranovdv";
-    const password = "TEST_PASSWORD";
+    const login = (process.env.LOGIN as string) || "baranovdv";
+    const password = (process.env.PASSWORD as string) || "TEST_PASSWORD";
 
     const basicAuthorizerFunction = new aws_lambda.Function(
       this,

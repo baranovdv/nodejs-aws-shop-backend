@@ -3,11 +3,7 @@ import { APIGatewayTokenAuthorizerEvent } from "aws-lambda";
 export const handler = async (event: APIGatewayTokenAuthorizerEvent) => {
   const token = event.authorizationToken;
 
-  console.log("handler on");
-
   if (!token) {
-    console.log("token", token);
-
     return {
       statusCode: 401,
       headers: {
