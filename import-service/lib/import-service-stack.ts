@@ -6,11 +6,10 @@ import {
   aws_lambda,
   aws_apigateway,
   aws_lambda_event_sources,
-  aws_iam,
   CfnOutput,
   Fn,
 } from "aws-cdk-lib";
-import { IdentitySource } from "aws-cdk-lib/aws-apigateway";
+import { Cors, IdentitySource } from "aws-cdk-lib/aws-apigateway";
 import { Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 
 export class ImportServiceStack extends Stack {
@@ -102,7 +101,12 @@ export class ImportServiceStack extends Stack {
       },
     });
 
-    const importResource = api.root.addResource("import");
+    const importResource = api.root.addResource("import", {
+      defaultCorsPreflightOptions: {
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowMethods: Cors.ALL_METHODS,
+      },
+    });
 
     const importIntegration = new aws_apigateway.LambdaIntegration(
       importProductsFileFunction
