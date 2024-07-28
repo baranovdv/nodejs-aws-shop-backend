@@ -1,0 +1,15 @@
+{
+  "name": "lambda",
+  "version": "1.0.0",
+  "description": "",
+  "main": "catalogBatchProcess.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "types": "./catalogBatchProcess.d.ts",
+  "dependencies": {
+    "@aws-sdk/client-sns": "^3.609.0"
+  }
+}
