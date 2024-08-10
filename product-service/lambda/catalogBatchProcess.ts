@@ -7,9 +7,9 @@ import { PublishCommand, SNSClient } from "@aws-sdk/client-sns";
 const region = process.env.REGION || "ap-southeast-2";
 const productsTableName = process.env.PRODUCTS || "Products";
 const stockTableName = process.env.STOCK || "Stock";
-const snsTopicArn = process.env.SNS_TOPIC_ARN;
+// const snsTopicArn = process.env.SNS_TOPIC_ARN;
 
-const snsClient = new SNSClient({ region: region });
+// const snsClient = new SNSClient({ region: region });
 const dynamoDB = new DynamoDB.DocumentClient({ region: region });
 
 export const handler = async (event: SQSEvent) => {
@@ -55,19 +55,19 @@ export const handler = async (event: SQSEvent) => {
           })
           .promise();
 
-        const snsMessage = {
-          Subject: "New product was uploaded",
-          Message: JSON.stringify(`New product was created ${productItem.title} in stock: ${stockItem.count}`),
-          TopicArn: snsTopicArn,
-          MessageAttributes: {
-            price: {
-              DataType: "Number",
-              StringValue: `${price}`,
-            },
-          },
-        };
+        // const snsMessage = {
+        //   Subject: "New product was uploaded",
+        //   Message: JSON.stringify(`New product was created ${productItem.title} in stock: ${stockItem.count}`),
+        //   TopicArn: snsTopicArn,
+        //   MessageAttributes: {
+        //     price: {
+        //       DataType: "Number",
+        //       StringValue: `${price}`,
+        //     },
+        //   },
+        // };
 
-        await snsClient.send(new PublishCommand(snsMessage));
+        // await snsClient.send(new PublishCommand(snsMessage));
 
         console.log("created");
       } catch (err) {
