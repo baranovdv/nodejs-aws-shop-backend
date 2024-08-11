@@ -1,0 +1,24 @@
+{
+  "name": "src",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "docker:build": "docker build -t bff .",
+    "docker:start": "docker run --rm -p 4001:4001 --env-file .env cart",
+    "eb:init": "eb init baranovdv-bff",
+    "eb:create": "eb create bff-development --single --cname baranovdv-bff-dev",
+    "eb:deploy": "eb deploy bff-development",
+    "eb:destroy": "eb terminate --all"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}

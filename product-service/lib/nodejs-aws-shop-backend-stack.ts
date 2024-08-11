@@ -41,7 +41,7 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
       exportName: "sqsServiceUrl",
     });
 
-    const createProductTopic = new sns.Topic(this, "createProductTopic");
+    // const createProductTopic = new sns.Topic(this, "createProductTopic");
 
     const getProductsList = new lambda.Function(this, "getProductsList", {
       runtime: lambda.Runtime.NODEJS_16_X,
@@ -73,7 +73,7 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
         handler: "catalogBatchProcess.handler",
         environment: {
           ...environmentConsts,
-          SNS_TOPIC_ARN: createProductTopic.topicArn,
+          // SNS_TOPIC_ARN: createProductTopic.topicArn,
         },
       }
     );
@@ -99,19 +99,19 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
       }
     );
 
-    createProductTopic.addSubscription(
-      new sns_subs.EmailSubscription("ThereWasMyEmail_1@gmail.com")
-    );
+    // createProductTopic.addSubscription(
+    //   new sns_subs.EmailSubscription("ThereWasMyEmail_1@gmail.com")
+    // );
 
-    createProductTopic.addSubscription(
-      new sns_subs.EmailSubscription("ThereWasMyEmail_2@gmail.com", {
-        filterPolicy: {
-          price: sns.SubscriptionFilter.numericFilter({
-            between: { start: 0, stop: 50 },
-          }),
-        },
-      })
-    );
+    // createProductTopic.addSubscription(
+    //   new sns_subs.EmailSubscription("ThereWasMyEmail_2@gmail.com", {
+    //     filterPolicy: {
+    //       price: sns.SubscriptionFilter.numericFilter({
+    //         between: { start: 0, stop: 50 },
+    //       }),
+    //     },
+    //   })
+    // );
 
     productsTable.grantReadWriteData(getProductsList);
     stockTable.grantReadWriteData(getProductsList);
@@ -123,7 +123,7 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
     stockTable.grantReadWriteData(catalogBatchProcess);
     sqsService.grantConsumeMessages(catalogBatchProcess);
     sqsService.grantSendMessages(importFileParserFunction);
-    createProductTopic.grantPublish(catalogBatchProcess);
+    // createProductTopic.grantPublish(catalogBatchProcess);
 
     const api = new apigateway.LambdaRestApi(this, "getProducts", {
       handler: getProductsList,
