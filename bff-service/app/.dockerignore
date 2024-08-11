@@ -1,0 +1,32 @@
+# Node.js-specific files and directories
+node_modules/          # Exclude Node modules to prevent local module structure conflicts and utilize layer caching
+npm-debug.log         # Ignore logs that may have been generated during development
+
+# Version control related files
+.git                 # Exclude version control directories unnecessary for building or running the app
+.gitignore           # Specific version control files like .gitignore are not needed in the image
+
+# Commonly generated files by macOS
+.DS_Store            # Exclude macOS folder settings, irrelevant to the build
+
+# Log files of various types
+*.log                 # Ignore log files as they are not useful in the production image and could potentially leak data
+
+# Docker environment and configuration files
+Dockerfile           # While Docker uses the Dockerfile for building the image, it does not need to be in the image itself
+docker-compose.yml   # Not necessary inside Docker images as it's used to define multi-container applications
+
+# Environment files often containing sensitive data
+.env                 # Exclude environment configuration files to keep secrets and environment-specific settings out
+
+# AWS deployment stuff
+deploy/
+
+# Test folder
+test
+
+# SQL reqs
+sql-requests
+
+# dist
+dist/
