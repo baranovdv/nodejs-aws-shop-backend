@@ -4,6 +4,6 @@ COPY package*.json ./
 RUN npm ci --only=production && npm cache clean --force
 COPY . .
 
-EXPOSE 4000
+EXPOSE 4001
 
-CMD ["src/index.js"]
+CMD ["node", "src/index.js"]

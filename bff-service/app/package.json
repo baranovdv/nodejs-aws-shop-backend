@@ -7,10 +7,10 @@
   "scripts": {
     "start": "node src/index.js",
     "docker:build": "docker build -t bff .",
-    "docker:start": "docker run --rm -p 4000:4000 --env-file .env cart",
+    "docker:start": "docker run --rm -p 4001:4001 --env-file .env cart",
     "eb:init": "eb init baranovdv-bff",
-    "eb:create": "eb create development --single --cname baranovdv-bff-dev",
-    "eb:deploy": "eb deploy development",
+    "eb:create": "eb create bff-development --single --cname baranovdv-bff-dev",
+    "eb:deploy": "eb deploy bff-development",
     "eb:destroy": "eb terminate --all"
   },
   "keywords": [],
