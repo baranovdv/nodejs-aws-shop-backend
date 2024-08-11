@@ -7,6 +7,12 @@ config();
 const app = express();
 const port = process.env.PORT || 3001;
 
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+// Middleware to parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true }));
+
 app.all("/*", async (req, res) => {
   try {
     const originalUrl = req.originalUrl;
@@ -18,6 +24,8 @@ app.all("/*", async (req, res) => {
 
     if (recURL) {
       try {
+        console.log("body", body);
+
         const axiosConfig = {
           method,
           url: `${recURL}${originalUrl}`,
