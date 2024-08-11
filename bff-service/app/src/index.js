@@ -40,6 +40,8 @@ app.all("/*", async (req, res) => {
           res.status(500).json({ error: axiosError.message });
         }
       }
+    } else {
+      throw new Error();
     }
   } catch (error) {
     res.status(502).json({ error: "Cannot process request" });
